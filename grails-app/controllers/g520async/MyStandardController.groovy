@@ -12,6 +12,20 @@ class MyStandardController {
         render template: 'results', model:[result: myAsyncService.notWaiting()]
     }
 
+    def notWaitingCreatingDomianEntities() {
+        myAsyncService.notWaitingCreatingDomianEntities()
+        redirect action: 'allDogs'
+    }
+
+    def notWaitingCreatingDomainEntitiesWithTransaction() {
+        myAsyncService.notWaitingCreatingDomainEntitiesWithTransaction()
+        redirect action: 'allDogs'
+    }
+
+    def allDogs() {
+        render template: 'results', model: [result: Dog.all*.name]
+    }
+
     def waiting() {
         render template: 'results', model:[result: myAsyncService.waiting()]
     }

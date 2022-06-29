@@ -9,6 +9,9 @@ import static grails.async.Promises.waitAll
 @Transactional
 class MyAsyncService {
 
+    /**
+     * This is pointless because we don't wait for the result
+     */
     def notWaiting() {
         log.info('Calculating total')
         def total
@@ -25,6 +28,49 @@ class MyAsyncService {
         total
     }
 
+    /**
+     * Spin off a task that creates some domain entities, this is a valid scenario
+     */
+    def notWaitingCreatingDomianEntities() {
+        def p = task {
+            (0..4).each {i ->
+                Dog.withNewSession {                // have to use withNewSession
+                    new Dog(name: "Dog$i").save()   // can't use flush: true here, if you do you'll get 'no transaction is in progress'
+                }
+            }
+        }
+        p.onError { t ->
+            log.info("Error creating dog ${t.message}")
+        }
+        p.onComplete {
+            log.info("Dogs created")
+        }
+    }
+
+    /**
+     * Same as above but able to flush using withNewTransaction
+     */
+    def notWaitingCreatingDomainEntitiesWithTransaction() {
+        def p = task {
+            (0..4).each {i ->
+                Dog.withNewSession {                // have to use withNewSession
+                    Dog.withNewTransaction {        // now we're using withNewTransaction in addition to withNewSession we can flush when saving
+                        new Dog(name: "Dog$i").save(flush: true)
+                    }
+                }
+            }
+        }
+        p.onError { t ->
+            log.info("Error creating dog ${t.message}")
+        }
+        p.onComplete {
+            log.info("Dogs created")
+        }
+    }
+
+    /**
+     * Spin off a task, calcuate something and wait
+     */
     def waiting() {
         log.info('Calculating total')
         def p = task {
@@ -41,6 +87,9 @@ class MyAsyncService {
         p.get()
     }
 
+    /**
+     * Spin off multiple tasks and wait on the results
+     */
     def multiTask() {
         def p1 = task { 2 * 2 }
         def p2 = task { 4 * 4 }
@@ -48,6 +97,9 @@ class MyAsyncService {
         waitAll(p1, p2, p3)
     }
 
+    /**
+     * Spin off multiple tasks and wait
+     */
     def multiTaskCollated() {
         def sumClosure = { List<Integer> l ->
             log.info "Summing $l"
@@ -64,10 +116,13 @@ class MyAsyncService {
         res.get()
     }
 
+    /**
+     * Add a domain to the database in a task and wait for the task to complete
+     */
     def addToDatabase() {
         def p = task {
             Dog.withNewSession {                // new session is required if spinning off a task
-                new Dog(name: 'Fido').save()
+                new Dog(name: 'Fido').save()    // can't flush otherwise you'll get 'no transaction is in progress'
             }
         }
         p.get()
@@ -80,14 +135,14 @@ class MyAsyncService {
     def addToDatabaseGormAsync() {
         def p = AsyncDog.async.task {
             withTransaction {
-                new Dog(name: 'Cujo').save(flush: true)
+                new Dog(name: 'Cujo').save(flush: true)     // and we can flush
             }
         }
         p.get()
     }
 
     /**
-     * withNewSession is required in the task
+     * Update an domain, we need withNewSession in this method but not required in updateName which is called from within this method
      */
     def updateDatabase() {
         def p = task {
