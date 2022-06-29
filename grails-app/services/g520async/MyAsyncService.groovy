@@ -160,6 +160,9 @@ class MyAsyncService {
         dog.save()
     }
 
+    /**
+     * Highlight the differences between withTransaction in standard method (existing isused) and in task (new transaction created)
+     */
     def withTransactionDifferences() {
         def inMethod
         Dog.withTransaction { transactionStatus ->
