@@ -1,6 +1,7 @@
 package g520async
 
 import grails.async.PromiseList
+import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 
 import static grails.async.Promises.task
@@ -48,15 +49,15 @@ class MyAsyncService {
     }
 
     /**
-     * Same as above but able to flush using withNewTransaction
+     * Same as above but able to flush using withTransaction
+     * withTransaction uses an existing transaction if available or creates a new one if not
      */
     def notWaitingCreatingDomainEntitiesWithTransaction() {
         def p = task {
-            (0..4).each {i ->
-                Dog.withNewSession {                // have to use withNewSession
-                    Dog.withNewTransaction {        // now we're using withNewTransaction in addition to withNewSession we can flush when saving
-                        new Dog(name: "Dog$i").save(flush: true)
-                    }
+            Dog.withTransaction { transactionStatus ->     // now we're using withTransaction we can flush when saving
+                log.info("Is new transaction? ${transactionStatus.isNewTransaction()}")
+                (0..4).each {i ->
+                    new Dog(name: "Dog$i").save(flush: true)
                 }
             }
         }
@@ -157,5 +158,51 @@ class MyAsyncService {
     def updateName(dog) {
         dog.name = 'barry'
         dog.save()
+    }
+
+    def withTransactionDifferences() {
+        def inMethod
+        Dog.withTransaction { transactionStatus ->
+            inMethod = transactionStatus.isNewTransaction()
+        }
+        def p = task{
+            Dog.withTransaction { transactionStatus ->
+                def inTask = transactionStatus.isNewTransaction()
+                [inMethod: inMethod, inTask: inTask]
+            }
+        }
+        p.get()
+    }
+
+    /**
+     * This works fine without newSession, newTransaction etc because the createDog method we're calling is transactional
+     * due to the annotation on the class, remove it and this fails
+     */
+    def taskCallingTransactionalMethod() {
+        def p = task {
+            createDog('Lassie')
+        }
+        p.get()
+    }
+
+    def createDog(dogName) {
+        new Dog(name: dogName).save()
+    }
+
+    /**
+     * Calling a NotTransactional method we need to wrap the method call in withTransaction
+     */
+    def taskCallingNonTransactionalMethod() {
+        def p = task {
+            Dog.withTransaction {
+                createNtDog('Fluffy')
+            }
+        }
+        p.get()
+    }
+
+    @NotTransactional
+    def createNtDog(dogName) {
+        new Dog(name: dogName).save()
     }
 }

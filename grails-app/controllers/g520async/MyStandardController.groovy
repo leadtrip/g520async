@@ -49,4 +49,16 @@ class MyStandardController {
     def addToDatabaseGormAsync() {
         render template: 'results', model:[result: myAsyncService.addToDatabaseGormAsync()]
     }
+
+    def withTransactionDifferences() {
+        render template: 'results', model: [result: "Is transaction new? ${myAsyncService.withTransactionDifferences()}"]
+    }
+
+    def taskCallingTransactionalMethod() {
+        render template: 'results', model:[result: myAsyncService.taskCallingTransactionalMethod()]
+    }
+
+    def taskCallingNonTransactionalMethod() {
+        render template: 'results', model:[result: myAsyncService.taskCallingNonTransactionalMethod()]
+    }
 }
