@@ -73,6 +73,22 @@ class MyAsyncService {
         p.get()
     }
 
+    /**
+     * Saving an AsyncDog using the async namespace on the gorm entity
+     * In this case, as opposed to using the task method directly from the Promises class, the task method binds a new session to the thread for us
+     */
+    def addToDatabaseGormAsync() {
+        def p = AsyncDog.async.task {
+            withTransaction {
+                new Dog(name: 'Cujo').save(flush: true)
+            }
+        }
+        p.get()
+    }
+
+    /**
+     * withNewSession is required in the task
+     */
     def updateDatabase() {
         def p = task {
             Dog.withNewSession {

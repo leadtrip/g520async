@@ -9,3 +9,5 @@
 <g:link action="addToDatabase">addToDatabase</g:link>
 <br>
 <g:link action="updateDatabase">updateDatabase</g:link>
+<br>
+<g:link action="addToDatabaseGormAsync">addToDatabaseGormAsync</g:link>

@@ -31,4 +31,8 @@ class MyStandardController {
     def updateDatabase() {
         render template: 'results', model:[result: myAsyncService.updateDatabase()]
     }
+
+    def addToDatabaseGormAsync() {
+        render template: 'results', model:[result: myAsyncService.addToDatabaseGormAsync()]
+    }
 }
