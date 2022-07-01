@@ -3,6 +3,7 @@ package g520async
 class MyStandardController {
 
     def myAsyncService
+    def nonGrailsAsyncService
 
     def index() {
 
@@ -60,5 +61,13 @@ class MyStandardController {
 
     def taskCallingNonTransactionalMethod() {
         render template: 'results', model:[result: myAsyncService.taskCallingNonTransactionalMethod()]
+    }
+
+    def printAbunchOfNumbers() {
+        render template: 'results', model: [result: nonGrailsAsyncService.printAbunchOfNumbers()]
+    }
+
+    def addAbunchOfDatabaseEntries() {
+        render template: 'results', model: [result: nonGrailsAsyncService.addAbunchOfDatabaseEntries()]
     }
 }

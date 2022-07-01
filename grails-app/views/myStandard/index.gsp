@@ -23,3 +23,7 @@
 <g:link action="taskCallingTransactionalMethod">taskCallingTransactionalMethod</g:link>
 <br>
 <g:link action="taskCallingNonTransactionalMethod">taskCallingNonTransactionalMethod</g:link>
+<br>
+<g:link action="printAbunchOfNumbers">printAbunchOfNumbers</g:link>
+<br>
+<g:link action="addAbunchOfDatabaseEntries">addAbunchOfDatabaseEntries</g:link>
