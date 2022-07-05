@@ -35,7 +35,7 @@ class MyAsyncService {
     def notWaitingCreatingDomianEntities() {
         def p = task {
             (0..4).each {i ->
-                Dog.withNewSession {                // have to use withNewSession
+                Dog.withNewSession {                // using withNewSession here, withTransaction or withNewTransaction also valid options
                     new Dog(name: "Dog$i").save()   // can't use flush: true here, if you do you'll get 'no transaction is in progress'
                 }
             }
@@ -70,7 +70,7 @@ class MyAsyncService {
     }
 
     /**
-     * Spin off a task, calcuate something and wait
+     * Spin off a task, calculate something and wait
      */
     def waiting() {
         log.info('Calculating total')
@@ -122,7 +122,7 @@ class MyAsyncService {
      */
     def addToDatabase() {
         def p = task {
-            Dog.withNewSession {                // new session is required if spinning off a task
+            Dog.withNewSession {                // withNewSession, withNewTransaction or withTransaction is required if spinning off a task
                 new Dog(name: 'Fido').save()    // can't flush otherwise you'll get 'no transaction is in progress'
             }
         }
@@ -161,7 +161,7 @@ class MyAsyncService {
     }
 
     /**
-     * Highlight the differences between withTransaction in standard method (existing isused) and in task (new transaction created)
+     * Highlight the differences between withTransaction in standard method (existing is used) and in task (new transaction created)
      */
     def withTransactionDifferences() {
         def inMethod
