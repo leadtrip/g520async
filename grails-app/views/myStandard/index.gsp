@@ -27,3 +27,5 @@
 <g:link action="printAbunchOfNumbers">printAbunchOfNumbers</g:link>
 <br>
 <g:link action="addAbunchOfDatabaseEntries">addAbunchOfDatabaseEntries</g:link>
+<br>
+<g:link action="addDogAndFlushThenGetInTask">addDogAndFlushThenGetInTask</g:link>

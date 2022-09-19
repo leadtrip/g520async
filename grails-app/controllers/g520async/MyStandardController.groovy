@@ -4,6 +4,7 @@ class MyStandardController {
 
     def myAsyncService
     def nonGrailsAsyncService
+    def notTransactionalService
 
     def index() {
 
@@ -69,5 +70,10 @@ class MyStandardController {
 
     def addAbunchOfDatabaseEntries() {
         render template: 'results', model: [result: nonGrailsAsyncService.addAbunchOfDatabaseEntries()]
+    }
+
+    def addDogAndFlushThenGetInTask() {
+        notTransactionalService.addLeonardoAndFlush()
+        render template: 'results', model: [result: notTransactionalService.getLeonardo()]
     }
 }
