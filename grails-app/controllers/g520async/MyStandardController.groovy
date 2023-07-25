@@ -2,9 +2,9 @@ package g520async
 
 class MyStandardController {
 
-    def myAsyncService
-    def nonGrailsAsyncService
-    def notTransactionalService
+    MyAsyncService myAsyncService
+    NonGrailsAsyncService nonGrailsAsyncService
+    NotTransactionalService notTransactionalService
 
     def index() {
 
